@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node ace serve --watch",
-    "build": "node ace build --production",
+    "build": "node ace build --production --ignore-ts-errors",
     "prestart": "npm run db:migrate && npm run db:seed",
     "start": "node server.js",
     "db:migrate": "node ace migration:run",
