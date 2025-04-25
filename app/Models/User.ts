@@ -31,7 +31,6 @@ export default class User extends BaseModel {
   @column()
   public role: UserRole
 
-
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
