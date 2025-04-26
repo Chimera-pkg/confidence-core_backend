@@ -8,7 +8,8 @@ export default class XpMeters extends BaseSchema {
       table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
       table.integer('xp').defaultTo(0)
       table.integer('level').defaultTo(1)
-      table.timestamps(true)
+      table.timestamp('created_at', { useTz: true }).defaultTo(this.now())
+      table.timestamp('updated_at', { useTz: true }).defaultTo(this.now())
     })
   }
   public async down() {

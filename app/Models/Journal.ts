@@ -1,14 +1,13 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, BelongsTo, beforeCreate } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
-import { v4 as uuid } from 'uuid'
 
 export default class Journal extends BaseModel {
   @column({ isPrimary: true })
-  public id: string
+  public id: number // Change from string to number
 
   @column()
-  public userId: string
+  public userId: number // Change from string to number
 
   @column()
   public title: string
@@ -24,9 +23,4 @@ export default class Journal extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
-
-  @beforeCreate()
-  public static assignUuid(journal: Journal) {
-    journal.id = uuid()
-  }
 }
