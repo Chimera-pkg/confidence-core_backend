@@ -1,39 +1,38 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import User, { UserRole } from 'App/Models/User'
+import User from 'App/Models/User'
 
 export default class UserSeeder extends BaseSeeder {
   public async run() {
-    const uniqueKey = 'id'
-
-    await User.updateOrCreateMany(uniqueKey, [
+    await User.createMany([
       {
-        id: 1,
-        email: 'admin@mail.com',
-        username: 'admin',
-        password: 'admin',
-        isVerified: true,
-        role: UserRole.admin,
-      },
-      {
-        id: 2,
-        email: 'patient@mail.com',
-        username: 'patient',
-        password: 'patient',
+        email: 'hehe@mail.com',
+        username: 'hehe',
+        password: 'hehe',
         isVerified: true,
       },
       {
-        id: 3,
-        email: 'nurse@mail.com',
-        username: 'nurse',
-        password: 'nurses',
+        email: 'user1@mail.com',
+        username: 'user1',
+        password: 'password1',
         isVerified: true,
       },
       {
-        id: 4,
-        email: 'pharmacist@mail.com',
-        username: 'pharmacist',
-        password: 'pharmacist',
+        email: 'user2@mail.com',
+        username: 'user2',
+        password: 'password2',
+        isVerified: false,
+      },
+      {
+        email: 'user3@mail.com',
+        username: 'user3',
+        password: 'password3',
         isVerified: true,
+      },
+      {
+        email: 'user4@mail.com',
+        username: 'user4',
+        password: 'password4',
+        isVerified: false,
       },
     ])
   }
