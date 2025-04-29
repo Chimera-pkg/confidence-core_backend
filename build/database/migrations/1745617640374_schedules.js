@@ -4,24 +4,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Schema_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Schema"));
-class Users extends Schema_1.default {
+class Schedules extends Schema_1.default {
     constructor() {
         super(...arguments);
-        this.tableName = 'users';
+        this.tableName = 'schedules';
     }
     async up() {
         this.schema.createTable(this.tableName, (table) => {
-            table.increments('id').primary();
-            table.string('email', 255).notNullable().unique();
-            table.string('username', 255).notNullable().unique();
-            table.string('password', 180).notNullable();
-            table.boolean('is_verified').defaultTo(false);
-            table.timestamps(true, true);
+            table.increments('id');
+            table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
+            table.json('days');
+            table.timestamp('created_at', { useTz: true }).defaultTo(this.now());
+            table.timestamp('updated_at', { useTz: true }).defaultTo(this.now());
         });
     }
     async down() {
         this.schema.dropTable(this.tableName);
     }
 }
-exports.default = Users;
-//# sourceMappingURL=1633758195701_users.js.map
+exports.default = Schedules;
+//# sourceMappingURL=1745617640374_schedules.js.map

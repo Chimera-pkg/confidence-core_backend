@@ -4,22 +4,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Schema_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Schema"));
-class NavigationLogs extends Schema_1.default {
+class XpMeters extends Schema_1.default {
     constructor() {
         super(...arguments);
-        this.tableName = 'navigation_logs';
+        this.tableName = 'xp_meters';
     }
     async up() {
         this.schema.createTable(this.tableName, (table) => {
-            table.increments('id').primary();
+            table.increments('id');
             table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
-            table.string('url').notNullable();
-            table.timestamp('visited_at').defaultTo(this.now());
+            table.integer('xp').defaultTo(0);
+            table.integer('level').defaultTo(1);
+            table.timestamp('created_at', { useTz: true }).defaultTo(this.now());
+            table.timestamp('updated_at', { useTz: true }).defaultTo(this.now());
         });
     }
     async down() {
         this.schema.dropTable(this.tableName);
     }
 }
-exports.default = NavigationLogs;
-//# sourceMappingURL=1745466949578_navigation_logs.js.map
+exports.default = XpMeters;
+//# sourceMappingURL=1745617289182_xp_meters.js.map

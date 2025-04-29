@@ -11,22 +11,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./auth"), exports);
-__exportStar(require("./file-uploads"), exports);
-__exportStar(require("./healthcare"), exports);
-__exportStar(require("./manufacturer"), exports);
-__exportStar(require("./products"), exports);
-__exportStar(require("./news"), exports);
-__exportStar(require("./gov-affairs"), exports);
-__exportStar(require("./countries"), exports);
-__exportStar(require("./users"), exports);
-__exportStar(require("./regulation-service-categories"), exports);
-__exportStar(require("./regulation-services"), exports);
-__exportStar(require("./marketing-service-categories"), exports);
-__exportStar(require("./marketing-services"), exports);
-__exportStar(require("./industry-categories"), exports);
-__exportStar(require("./product-categories"), exports);
-__exportStar(require("./regulation-assessments"), exports);
-__exportStar(require("./service-categories"), exports);
-__exportStar(require("./services"), exports);
-__exportStar(require("./lab-tests"), exports);
+__exportStar(require("./journal"), exports);
+__exportStar(require("./xp-meter"), exports);
+__exportStar(require("./badge"), exports);
+__exportStar(require("./schedule"), exports);
+__exportStar(require("./nav-logs"), exports);
 //# sourceMappingURL=index.js.map

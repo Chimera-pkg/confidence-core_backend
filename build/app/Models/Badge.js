@@ -12,38 +12,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const luxon_1 = require("luxon");
 const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
 const User_1 = __importDefault(require("./User"));
-class Journal extends Orm_1.BaseModel {
+class Badge extends Orm_1.BaseModel {
 }
 __decorate([
     Orm_1.column({ isPrimary: true }),
     __metadata("design:type", Number)
-], Journal.prototype, "id", void 0);
+], Badge.prototype, "id", void 0);
 __decorate([
     Orm_1.column(),
     __metadata("design:type", Number)
-], Journal.prototype, "userId", void 0);
+], Badge.prototype, "userId", void 0);
 __decorate([
     Orm_1.column(),
     __metadata("design:type", String)
-], Journal.prototype, "title", void 0);
+], Badge.prototype, "badgeName", void 0);
 __decorate([
-    Orm_1.column(),
+    Orm_1.column.dateTime({ autoCreate: true }),
     __metadata("design:type", String)
-], Journal.prototype, "content", void 0);
+], Badge.prototype, "awardedAt", void 0);
 __decorate([
     Orm_1.belongsTo(() => User_1.default),
     __metadata("design:type", Object)
-], Journal.prototype, "user", void 0);
-__decorate([
-    Orm_1.column.dateTime({ autoCreate: true }),
-    __metadata("design:type", luxon_1.DateTime)
-], Journal.prototype, "createdAt", void 0);
-__decorate([
-    Orm_1.column.dateTime({ autoCreate: true, autoUpdate: true }),
-    __metadata("design:type", luxon_1.DateTime)
-], Journal.prototype, "updatedAt", void 0);
-exports.default = Journal;
-//# sourceMappingURL=Journal.js.map
+], Badge.prototype, "user", void 0);
+exports.default = Badge;
+//# sourceMappingURL=Badge.js.map
