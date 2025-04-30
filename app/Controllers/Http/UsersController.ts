@@ -33,7 +33,7 @@ export default class UsersController {
   public async show({ params, bouncer }: HttpContextContract) {
     const user = await User.findOrFail(params.id)
 
-    await bouncer.with('UserPolicy').authorize('view')
+    // await bouncer.with('UserPolicy').authorize('view')
 
     return user
   }
