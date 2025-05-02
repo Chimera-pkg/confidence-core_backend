@@ -155,4 +155,55 @@ export default class AuthController {
 
     return `${clientWebBaseUrl}/send-verification?email=${email}`
   }
+
+  public async registerUser({ request }: HttpContextContract) {
+    const email = request.input('email')
+    const username = request.input('username')
+    const password = request.input('password')
+
+    const existingUser = await User.query()
+      .where('email', email)
+      .orWhere('username', username)
+      .first()
+
+    if (existingUser) {
+      throw new UnprocessableEntityException('User already exists')
+    }
+
+    const newUser = new User()
+    newUser.email = email
+    newUser.username = username
+    newUser.password = password
+    newUser.isVerified = false
+
+    await newUser.save()
+
+    return {
+      message: 'User registered successfully',
+      user: newUser,
+    }
+  }
+
+  public async updateVerificationStatus({ request }: HttpContextContract) {
+    const email = request.input('email')
+    const isVerified = request.input('is_verified')
+
+    if (typeof isVerified !== 'boolean') {
+      throw new UnprocessableEntityException('is_verified must be a boolean value')
+    }
+
+    const user = await User.findBy('email', email)
+
+    if (!user) {
+      throw new UnprocessableEntityException('User not found')
+    }
+
+    user.isVerified = isVerified
+    await user.save()
+
+    return {
+      message: `User verification status updated successfully`,
+      user,
+    }
+  }
 }

@@ -4,6 +4,7 @@ import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export enum UserRole {
   admin = 'admin',
+  user = 'user',
 }
 
 export default class User extends BaseModel {
