@@ -133,6 +133,45 @@ class AuthController {
         const clientWebBaseUrl = Env_1.default.get('CLIENT_WEB_BASEURL');
         return `${clientWebBaseUrl}/send-verification?email=${email}`;
     }
+    async registerUser({ request }) {
+        const email = request.input('email');
+        const username = request.input('username');
+        const password = request.input('password');
+        const existingUser = await User_1.default.query()
+            .where('email', email)
+            .orWhere('username', username)
+            .first();
+        if (existingUser) {
+            throw new UnprocessableEntityException_1.default('User already exists');
+        }
+        const newUser = new User_1.default();
+        newUser.email = email;
+        newUser.username = username;
+        newUser.password = password;
+        newUser.isVerified = false;
+        await newUser.save();
+        return {
+            message: 'User registered successfully',
+            user: newUser,
+        };
+    }
+    async updateVerificationStatus({ request }) {
+        const email = request.input('email');
+        const isVerified = request.input('is_verified');
+        if (typeof isVerified !== 'boolean') {
+            throw new UnprocessableEntityException_1.default('is_verified must be a boolean value');
+        }
+        const user = await User_1.default.findBy('email', email);
+        if (!user) {
+            throw new UnprocessableEntityException_1.default('User not found');
+        }
+        user.isVerified = isVerified;
+        await user.save();
+        return {
+            message: `User verification status updated successfully`,
+            user,
+        };
+    }
 }
 exports.default = AuthController;
 //# sourceMappingURL=AuthController.js.map

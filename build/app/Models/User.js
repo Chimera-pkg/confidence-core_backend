@@ -19,6 +19,7 @@ const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
 var UserRole;
 (function (UserRole) {
     UserRole["admin"] = "admin";
+    UserRole["user"] = "user";
 })(UserRole = exports.UserRole || (exports.UserRole = {}));
 class User extends Orm_1.BaseModel {
     constructor() {

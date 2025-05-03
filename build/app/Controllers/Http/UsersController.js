@@ -28,7 +28,6 @@ class UsersController {
     }
     async show({ params, bouncer }) {
         const user = await User_1.default.findOrFail(params.id);
-        await bouncer.with('UserPolicy').authorize('view');
         return user;
     }
     async store({ request }) {

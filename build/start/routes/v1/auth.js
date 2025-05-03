@@ -10,9 +10,9 @@ Route_1.default.group(() => {
         Route_1.default.post('/google/manufacturer', 'AuthController.loginManufacturerWithGoogle');
         Route_1.default.post('/google/healthcare', 'AuthController.loginHealthcareWithGoogle');
         Route_1.default.post('/register/admin', 'AuthController.registerAdmin');
-        Route_1.default.post('/register/manufacturer', 'AuthController.registerManufacturer');
-        Route_1.default.post('/register/healthcare', 'AuthController.registerHealthcare');
+        Route_1.default.post('/register/user', 'AuthController.registerUser');
         Route_1.default.post('/register/send-email-verification', 'AuthController.sendEmailVerification');
+        Route_1.default.put('/update-verification-status', 'AuthController.updateVerificationStatus');
         Route_1.default.get('/verify/:email', 'AuthController.verifyEmail').as('verifyEmail');
         Route_1.default.get('/connect/google', async ({ ally }) => {
             return ally.use('google').redirect();
