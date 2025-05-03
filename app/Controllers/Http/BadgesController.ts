@@ -11,4 +11,13 @@ export default class BadgeController {
     const badge = await Badge.create({ userId: auth.user!.id, badgeName })
     return response.created(badge)
   }
+
+  public async delete({ auth, params }: HttpContextContract) {
+    const badge = await Badge.query()
+      .where('id', params.id)
+      .andWhere('user_id', auth.user!.id)
+      .firstOrFail()
+    await badge.delete()
+    return { message: 'Badge deleted successfully' }
+  }
 }
