@@ -26,7 +26,7 @@ class UsersController {
         users.baseUrl('/users');
         return users;
     }
-    async show({ params, bouncer }) {
+    async show({ params }) {
         const user = await User_1.default.findOrFail(params.id);
         return user;
     }

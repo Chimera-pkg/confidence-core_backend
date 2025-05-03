@@ -13,6 +13,14 @@ class BadgeController {
         const badge = await Badge_1.default.create({ userId: auth.user.id, badgeName });
         return response.created(badge);
     }
+    async delete({ auth, params }) {
+        const badge = await Badge_1.default.query()
+            .where('id', params.id)
+            .andWhere('user_id', auth.user.id)
+            .firstOrFail();
+        await badge.delete();
+        return { message: 'Badge deleted successfully' };
+    }
 }
 exports.default = BadgeController;
 //# sourceMappingURL=BadgesController.js.map
