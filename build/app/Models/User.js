@@ -53,14 +53,6 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "rememberMeToken", void 0);
 __decorate([
-    Orm_1.column({
-        serialize: (value) => {
-            return Boolean(value);
-        },
-    }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isVerified", void 0);
-__decorate([
     Orm_1.column(),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);

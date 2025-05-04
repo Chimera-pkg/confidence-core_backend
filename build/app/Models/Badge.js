@@ -29,10 +29,6 @@ __decorate([
     __metadata("design:type", String)
 ], Badge.prototype, "badgeName", void 0);
 __decorate([
-    Orm_1.column.dateTime({ autoCreate: true }),
-    __metadata("design:type", String)
-], Badge.prototype, "awardedAt", void 0);
-__decorate([
     Orm_1.belongsTo(() => User_1.default),
     __metadata("design:type", Object)
 ], Badge.prototype, "user", void 0);

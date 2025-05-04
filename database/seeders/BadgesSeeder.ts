@@ -5,19 +5,16 @@ export default class BadgeSeeder extends BaseSeeder {
   public async run() {
     await Badge.createMany([
       {
-        userId: 1,
+        userId: 1, // Pastikan user_id ini ada di tabel users
         badgeName: 'Gold Badge',
-        awardedAt: '2023-10-01 10:00:00',
       },
       {
-        userId: 2,
+        userId: 2, // Pastikan user_id ini ada di tabel users
         badgeName: 'Silver Badge',
-        awardedAt: '2023-10-02 11:00:00',
       },
       {
-        userId: 3,
+        userId: 3, // Pastikan user_id ini ada di tabel users
         badgeName: 'Bronze Badge',
-        awardedAt: '2023-10-03 12:00:00',
       },
     ])
   }

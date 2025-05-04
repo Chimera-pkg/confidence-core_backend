@@ -9,7 +9,7 @@ export enum UserRole {
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
-  public id: number // Change from string to number
+  public id: number
 
   @column()
   public email: string
@@ -22,13 +22,6 @@ export default class User extends BaseModel {
 
   @column({ serializeAs: null })
   public rememberMeToken?: string
-
-  @column({
-    serialize: (value?: Number) => {
-      return Boolean(value)
-    },
-  })
-  public isVerified: boolean
 
   @column()
   public role: UserRole

@@ -34,6 +34,14 @@ __decorate([
     __metadata("design:type", String)
 ], Journal.prototype, "content", void 0);
 __decorate([
+    Orm_1.column(),
+    __metadata("design:type", String)
+], Journal.prototype, "feeling", void 0);
+__decorate([
+    Orm_1.column(),
+    __metadata("design:type", Object)
+], Journal.prototype, "reasonFeeling", void 0);
+__decorate([
     Orm_1.belongsTo(() => User_1.default),
     __metadata("design:type", Object)
 ], Journal.prototype, "user", void 0);

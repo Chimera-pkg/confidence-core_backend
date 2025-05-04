@@ -9,7 +9,7 @@ class JournalController {
         return await Journal_1.default.query().where('user_id', auth.user.id);
     }
     async store({ auth, request, response }) {
-        const data = request.only(['title', 'content']);
+        const data = request.only(['title', 'content', 'feeling', 'reasonFeeling']);
         const journal = await Journal_1.default.create({ ...data, userId: auth.user.id });
         return response.created(journal);
     }
@@ -23,7 +23,7 @@ class JournalController {
         const journal = await Journal_1.default.find(params.id);
         if (!journal || journal.userId !== auth.user.id)
             return response.unauthorized();
-        journal.merge(request.only(['title', 'content']));
+        journal.merge(request.only(['title', 'content', 'feeling', 'reasonFeeling']));
         await journal.save();
         return journal;
     }

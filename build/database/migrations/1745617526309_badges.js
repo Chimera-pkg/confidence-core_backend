@@ -14,7 +14,6 @@ class Badges extends Schema_1.default {
             table.increments('id');
             table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE');
             table.string('badge_name').notNullable();
-            table.timestamp('awarded_at', { useTz: true }).defaultTo(this.now());
         });
     }
     async down() {

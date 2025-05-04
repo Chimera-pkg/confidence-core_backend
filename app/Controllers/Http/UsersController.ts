@@ -10,32 +10,12 @@ import NotFoundException from 'App/Exceptions/NotFoundException'
 import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 
 export default class UsersController {
-  public async index({ request, bouncer }: HttpContextContract) {
-    const page = request.input('page', 1)
-    const limit = request.input('limit', 10)
-    const role = request.input('role', '')
-
-    await bouncer.with('UserPolicy').authorize('viewList')
-
-    const queryUsers = User.query()
-
-    if (role) {
-      queryUsers.where('role', role)
-    }
-
-    const users = await queryUsers.paginate(page, limit)
-
-    users.baseUrl('/users')
-
-    return users
+  public async index({}: HttpContextContract) {
+    return await User.all()
   }
 
   public async show({ params }: HttpContextContract) {
-    const user = await User.findOrFail(params.id)
-
-    // await bouncer.with('UserPolicy').authorize('view')
-
-    return user
+    return await User.findOrFail(params.id)
   }
 
   public async store({ request }) {

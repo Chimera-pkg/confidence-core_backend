@@ -13,22 +13,11 @@ const VerifyEmail_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Mailers
 const NotFoundException_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Exceptions/NotFoundException"));
 const UpdateUserValidator_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Validators/UpdateUserValidator"));
 class UsersController {
-    async index({ request, bouncer }) {
-        const page = request.input('page', 1);
-        const limit = request.input('limit', 10);
-        const role = request.input('role', '');
-        await bouncer.with('UserPolicy').authorize('viewList');
-        const queryUsers = User_1.default.query();
-        if (role) {
-            queryUsers.where('role', role);
-        }
-        const users = await queryUsers.paginate(page, limit);
-        users.baseUrl('/users');
-        return users;
+    async index({}) {
+        return await User_1.default.all();
     }
     async show({ params }) {
-        const user = await User_1.default.findOrFail(params.id);
-        return user;
+        return await User_1.default.findOrFail(params.id);
     }
     async store({ request }) {
         await request.validate(CreateUserValidator_1.default);

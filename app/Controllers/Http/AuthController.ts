@@ -1,11 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Env from '@ioc:Adonis/Core/Env'
-import Route from '@ioc:Adonis/Core/Route'
 import UnprocessableEntityException from 'App/Exceptions/UnprocessableEntityException'
 import User, { UserRole } from 'App/Models/User'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
-import VerifyEmail from 'App/Mailers/VerifyEmail'
-import SendEmailVerificationValidator from 'App/Validators/SendEmailVerificationValidator'
 
 export default class AuthController {
   public async login({ request, auth }: HttpContextContract) {
@@ -19,10 +16,6 @@ export default class AuthController {
 
     if (!user.password) {
       throw new AuthenticationException('cannot login using password', 'E_UNAUTHORIZED_ACCESS')
-    }
-
-    if (!user.isVerified) {
-      throw new AuthenticationException('user is not verified yet', 'E_UNAUTHORIZED_ACCESS')
     }
 
     const token = await auth.use('api').attempt(email, password, {
@@ -64,96 +57,12 @@ export default class AuthController {
     newUser.username = username
     newUser.password = password
     newUser.role = UserRole.admin
-    newUser.isVerified = true
 
     await newUser.save()
 
     return {
       message: `Admin created successfully`,
     }
-  }
-
-  public async sendEmailVerification({ request }: HttpContextContract) {
-    await request.validate(SendEmailVerificationValidator)
-
-    const email = request.input('email')
-
-    const user = await User.findBy('email', email)
-
-    if (!user) {
-      throw new UnprocessableEntityException('email is not registered')
-    }
-
-    if (user.isVerified) {
-      throw new UnprocessableEntityException('user with this email already verified')
-    }
-
-    const verificationUrl = this.generateVerificationUrl(user.email)
-
-    const resendVerificationUrl = this.generateResendVerificationUrl(user.email)
-
-    const verifyEmail = new VerifyEmail(
-      'Welcome to MedMap!',
-      user.email,
-      user.username,
-      verificationUrl,
-      resendVerificationUrl
-    )
-
-    const isDevelopment = Env.get('NODE_ENV') === 'development'
-    const isStaging = Env.get('NODE_ENV') === 'staging'
-
-    let response
-
-    if (isDevelopment || isStaging) {
-      response = await verifyEmail.preview()
-    } else {
-      await verifyEmail.send()
-    }
-
-    return {
-      message: `Email verification sent to ${user.email}`,
-      response,
-    }
-  }
-
-  public async verifyEmail({ request }: HttpContextContract) {
-    if (!request.hasValidSignature()) {
-      throw new UnprocessableEntityException('Signature is missing or URL was tampered.')
-    }
-
-    const email = request.param('email')
-
-    const user = await User.findBy('email', email)
-
-    if (!user) {
-      throw new UnprocessableEntityException('Email is not registered')
-    }
-
-    if (user.isVerified) {
-      throw new UnprocessableEntityException('Email already verified')
-    }
-
-    user.isVerified = true
-
-    await user.save()
-    return {
-      message: 'Email verified successfully',
-    }
-  }
-
-  private generateVerificationUrl(email: string): string {
-    const url = Route.makeSignedUrl('verifyEmail', { email }, { expiresIn: '24h' })
-
-    const clientWebBaseUrl = Env.get('CLIENT_WEB_BASEURL')
-
-    return `${clientWebBaseUrl}/verify-email?url=${url}`
-  }
-
-  private generateResendVerificationUrl(email: string): string {
-    const clientWebBaseUrl = Env.get('CLIENT_WEB_BASEURL')
-
-    return `${clientWebBaseUrl}/send-verification?email=${email}`
   }
 
   public async registerUser({ request }: HttpContextContract) {
@@ -174,36 +83,12 @@ export default class AuthController {
     newUser.email = email
     newUser.username = username
     newUser.password = password
-    newUser.isVerified = false
 
     await newUser.save()
 
     return {
       message: 'User registered successfully',
       user: newUser,
-    }
-  }
-
-  public async updateVerificationStatus({ request }: HttpContextContract) {
-    const email = request.input('email')
-    const isVerified = request.input('is_verified')
-
-    if (typeof isVerified !== 'boolean') {
-      throw new UnprocessableEntityException('is_verified must be a boolean value')
-    }
-
-    const user = await User.findBy('email', email)
-
-    if (!user) {
-      throw new UnprocessableEntityException('User not found')
-    }
-
-    user.isVerified = isVerified
-    await user.save()
-
-    return {
-      message: `User verification status updated successfully`,
-      user,
     }
   }
 }
