@@ -7,7 +7,7 @@ export default class JournalController {
   }
 
   public async store({ auth, request, response }: HttpContextContract) {
-    const data = request.only(['title', 'content']) // Hapus entry_date dari request
+    const data = request.only(['title', 'content', 'feeling', 'reasonFeeling'])
     const journal = await Journal.create({ ...data, userId: auth.user!.id })
     return response.created(journal)
   }
@@ -21,7 +21,7 @@ export default class JournalController {
   public async update({ auth, params, request, response }: HttpContextContract) {
     const journal = await Journal.find(params.id)
     if (!journal || journal.userId !== auth.user!.id) return response.unauthorized()
-    journal.merge(request.only(['title', 'content'])) // Hapus entry_date dari request
+    journal.merge(request.only(['title', 'content', 'feeling', 'reasonFeeling']))
     await journal.save()
     return journal
   }

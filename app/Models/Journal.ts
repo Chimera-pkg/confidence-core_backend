@@ -4,16 +4,22 @@ import User from './User'
 
 export default class Journal extends BaseModel {
   @column({ isPrimary: true })
-  public id: number // Change from string to number
+  public id: number
 
   @column()
-  public userId: number // Change from string to number
+  public userId: number
 
   @column()
   public title: string
 
   @column()
   public content: string
+
+  @column()
+  public feeling: string // Tambahkan kolom feeling
+
+  @column()
+  public reasonFeeling: string | null // Tambahkan kolom reason_feeling
 
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
