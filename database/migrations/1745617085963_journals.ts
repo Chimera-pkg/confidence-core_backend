@@ -11,7 +11,6 @@ export default class Journals extends BaseSchema {
         table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
         table.string('title').notNullable()
         table.text('content').notNullable()
-        table.date('entry_date').notNullable()
         table.timestamp('created_at', { useTz: true }).defaultTo(this.now())
         table.timestamp('updated_at', { useTz: true }).defaultTo(this.now())
       })
