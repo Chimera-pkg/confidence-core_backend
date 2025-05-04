@@ -3,6 +3,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import UnprocessableEntityException from 'App/Exceptions/UnprocessableEntityException'
 import User, { UserRole } from 'App/Models/User'
 import { AuthenticationException } from '@adonisjs/auth/build/standalone'
+import EmailNotRegisteredException from 'App/Exceptions/EmailNotRegisteredException'
 
 export default class AuthController {
   public async login({ request, auth }: HttpContextContract) {
@@ -11,7 +12,7 @@ export default class AuthController {
     const user = await User.findBy('email', email)
 
     if (!user) {
-      throw new AuthenticationException('email is not registered', 'E_UNAUTHORIZED_ACCESS')
+      throw new EmailNotRegisteredException()
     }
 
     if (!user.password) {
