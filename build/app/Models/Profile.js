@@ -13,37 +13,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
-const luxon_1 = require("luxon");
 const User_1 = __importDefault(require("./User"));
-class Schedule extends Orm_1.BaseModel {
+const XpMeter_1 = __importDefault(require("./XpMeter"));
+const Schedule_1 = __importDefault(require("./Schedule"));
+class Profile extends Orm_1.BaseModel {
 }
 __decorate([
     Orm_1.column({ isPrimary: true }),
     __metadata("design:type", Number)
-], Schedule.prototype, "id", void 0);
+], Profile.prototype, "id", void 0);
 __decorate([
     Orm_1.column(),
     __metadata("design:type", Number)
-], Schedule.prototype, "userId", void 0);
+], Profile.prototype, "userId", void 0);
 __decorate([
     Orm_1.column(),
     __metadata("design:type", Object)
-], Schedule.prototype, "days", void 0);
-__decorate([
-    Orm_1.column(),
-    __metadata("design:type", Number)
-], Schedule.prototype, "streakCount", void 0);
-__decorate([
-    Orm_1.column.dateTime(),
-    __metadata("design:type", luxon_1.DateTime)
-], Schedule.prototype, "lastLoginDate", void 0);
-__decorate([
-    Orm_1.column.date(),
-    __metadata("design:type", Object)
-], Schedule.prototype, "lastJournalDate", void 0);
+], Profile.prototype, "avatarUrl", void 0);
 __decorate([
     Orm_1.belongsTo(() => User_1.default),
     __metadata("design:type", Object)
-], Schedule.prototype, "user", void 0);
-exports.default = Schedule;
-//# sourceMappingURL=Schedule.js.map
+], Profile.prototype, "user", void 0);
+__decorate([
+    Orm_1.hasOne(() => XpMeter_1.default, { foreignKey: 'userId' }),
+    __metadata("design:type", Object)
+], Profile.prototype, "xpMeter", void 0);
+__decorate([
+    Orm_1.hasOne(() => Schedule_1.default, { foreignKey: 'userId' }),
+    __metadata("design:type", Object)
+], Profile.prototype, "schedule", void 0);
+exports.default = Profile;
+//# sourceMappingURL=Profile.js.map

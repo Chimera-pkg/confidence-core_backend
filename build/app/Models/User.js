@@ -39,10 +39,6 @@ __decorate([
 __decorate([
     Orm_1.column(),
     __metadata("design:type", String)
-], User.prototype, "email", void 0);
-__decorate([
-    Orm_1.column(),
-    __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
     Orm_1.column({ serializeAs: null }),
@@ -56,6 +52,14 @@ __decorate([
     Orm_1.column(),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
+__decorate([
+    Orm_1.column(),
+    __metadata("design:type", Number)
+], User.prototype, "age", void 0);
+__decorate([
+    Orm_1.column(),
+    __metadata("design:type", String)
+], User.prototype, "grade", void 0);
 __decorate([
     Orm_1.column.dateTime({ autoCreate: true }),
     __metadata("design:type", luxon_1.DateTime)

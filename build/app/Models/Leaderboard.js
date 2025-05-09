@@ -13,37 +13,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
-const luxon_1 = require("luxon");
 const User_1 = __importDefault(require("./User"));
-class Schedule extends Orm_1.BaseModel {
+class Leaderboard extends Orm_1.BaseModel {
 }
 __decorate([
     Orm_1.column({ isPrimary: true }),
     __metadata("design:type", Number)
-], Schedule.prototype, "id", void 0);
+], Leaderboard.prototype, "id", void 0);
 __decorate([
     Orm_1.column(),
     __metadata("design:type", Number)
-], Schedule.prototype, "userId", void 0);
-__decorate([
-    Orm_1.column(),
-    __metadata("design:type", Object)
-], Schedule.prototype, "days", void 0);
+], Leaderboard.prototype, "userId", void 0);
 __decorate([
     Orm_1.column(),
     __metadata("design:type", Number)
-], Schedule.prototype, "streakCount", void 0);
+], Leaderboard.prototype, "rank", void 0);
 __decorate([
-    Orm_1.column.dateTime(),
-    __metadata("design:type", luxon_1.DateTime)
-], Schedule.prototype, "lastLoginDate", void 0);
+    Orm_1.column(),
+    __metadata("design:type", Number)
+], Leaderboard.prototype, "journalCount", void 0);
 __decorate([
-    Orm_1.column.date(),
-    __metadata("design:type", Object)
-], Schedule.prototype, "lastJournalDate", void 0);
+    Orm_1.column(),
+    __metadata("design:type", Number)
+], Leaderboard.prototype, "streakCount", void 0);
 __decorate([
     Orm_1.belongsTo(() => User_1.default),
     __metadata("design:type", Object)
-], Schedule.prototype, "user", void 0);
-exports.default = Schedule;
-//# sourceMappingURL=Schedule.js.map
+], Leaderboard.prototype, "user", void 0);
+exports.default = Leaderboard;
+//# sourceMappingURL=Leaderboard.js.map

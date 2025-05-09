@@ -26,18 +26,19 @@ const Env_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Env"));
 const UnprocessableEntityException_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Exceptions/UnprocessableEntityException"));
 const User_1 = __importStar(global[Symbol.for('ioc.use')]("App/Models/User"));
 const standalone_1 = require("@adonisjs/auth/build/standalone");
+const EmailNotRegisteredException_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Exceptions/EmailNotRegisteredException"));
 class AuthController {
     async login({ request, auth }) {
-        const email = request.input('email');
+        const username = request.input('username');
         const password = request.input('password');
-        const user = await User_1.default.findBy('email', email);
+        const user = await User_1.default.findBy('username', username);
         if (!user) {
-            throw new standalone_1.AuthenticationException('email is not registered', 'E_UNAUTHORIZED_ACCESS');
+            throw new EmailNotRegisteredException_1.default();
         }
         if (!user.password) {
             throw new standalone_1.AuthenticationException('cannot login using password', 'E_UNAUTHORIZED_ACCESS');
         }
-        const token = await auth.use('api').attempt(email, password, {
+        const token = await auth.use('api').attempt(username, password, {
             expiresIn: '7 days',
         });
         return {
@@ -63,7 +64,6 @@ class AuthController {
             throw new UnprocessableEntityException_1.default('Username already exist');
         }
         const newUser = new User_1.default();
-        newUser.email = email;
         newUser.username = username;
         newUser.password = password;
         newUser.role = User_1.UserRole.admin;
@@ -73,20 +73,17 @@ class AuthController {
         };
     }
     async registerUser({ request }) {
-        const email = request.input('email');
-        const username = request.input('username');
-        const password = request.input('password');
-        const existingUser = await User_1.default.query()
-            .where('email', email)
-            .orWhere('username', username)
-            .first();
+        const data = request.only(['username', 'password', 'age', 'grade']);
+        const existingUser = await User_1.default.query().where('username', data.username).first();
         if (existingUser) {
-            throw new UnprocessableEntityException_1.default('User already exists');
+            throw new Error('Username already exists');
         }
         const newUser = new User_1.default();
-        newUser.email = email;
-        newUser.username = username;
-        newUser.password = password;
+        newUser.username = data.username;
+        newUser.password = data.password;
+        newUser.age = data.age;
+        newUser.grade = data.grade;
+        newUser.role = User_1.UserRole.user;
         await newUser.save();
         return {
             message: 'User registered successfully',

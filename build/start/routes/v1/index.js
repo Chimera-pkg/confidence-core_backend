@@ -16,4 +16,6 @@ __exportStar(require("./xp-meter"), exports);
 __exportStar(require("./badge"), exports);
 __exportStar(require("./schedule"), exports);
 __exportStar(require("./nav-logs"), exports);
+__exportStar(require("./profile"), exports);
+__exportStar(require("./users"), exports);
 //# sourceMappingURL=index.js.map

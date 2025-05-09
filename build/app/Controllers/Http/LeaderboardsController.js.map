@@ -1,0 +1,1 @@
+{"version":3,"file":"LeaderboardsController.js","sourceRoot":"","sources":["../../../../app/Controllers/Http/LeaderboardsController.ts"],"names":[],"mappings":";;;;;AACA,+FAAgD;AAEhD,MAAqB,sBAAsB;IAClC,KAAK,CAAC,KAAK,CAAC,EAAuB;QACxC,OAAO,MAAM,qBAAW,CAAC,KAAK,EAAE,CAAC,OAAO,CAAC,MAAM,CAAC,CAAC,OAAO,CAAC,MAAM,EAAE,KAAK,CAAC,CAAA;IACzE,CAAC;CACF;AAJD,yCAIC"}
