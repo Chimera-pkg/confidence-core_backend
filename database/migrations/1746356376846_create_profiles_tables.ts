@@ -12,7 +12,8 @@ export default class Profiles extends BaseSchema {
       table.integer('xp').defaultTo(0)
       table.integer('streak_count').defaultTo(0)
       table.integer('journal_count').defaultTo(0)
-      table.timestamps(true)
+      table.timestamp('created_at', { useTz: true }).defaultTo(this.now()) // Perbaikan
+      table.timestamp('updated_at', { useTz: true }).defaultTo(this.now()) // Perbaikan
     })
   }
 

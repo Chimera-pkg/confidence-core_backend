@@ -1,5 +1,7 @@
-import { BaseModel, column, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, belongsTo, BelongsTo, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import User from './User'
+import XpMeter from './XpMeter'
+import Schedule from './Schedule'
 
 export default class Profile extends BaseModel {
   @column({ isPrimary: true })
@@ -11,18 +13,12 @@ export default class Profile extends BaseModel {
   @column()
   public avatarUrl: string | null
 
-  @column()
-  public level: number
-
-  @column()
-  public xp: number
-
-  @column()
-  public streakCount: number
-
-  @column()
-  public journalCount: number
-
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
+
+  @hasOne(() => XpMeter, { foreignKey: 'userId' })
+  public xpMeter: HasOne<typeof XpMeter>
+
+  @hasOne(() => Schedule, { foreignKey: 'userId' })
+  public schedule: HasOne<typeof Schedule>
 }

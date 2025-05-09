@@ -1,11 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Route from '@ioc:Adonis/Core/Route'
-import Env from '@ioc:Adonis/Core/Env'
-import Logger from '@ioc:Adonis/Core/Logger'
 import User, { UserRole } from 'App/Models/User'
 import CreateUserValidator from 'App/Validators/User/CreateUserValidator'
 import UnprocessableEntityException from 'App/Exceptions/UnprocessableEntityException'
-import VerifyEmail from 'App/Mailers/VerifyEmail'
 import NotFoundException from 'App/Exceptions/NotFoundException'
 import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 
@@ -18,92 +14,53 @@ export default class UsersController {
     return await User.findOrFail(params.id)
   }
 
-  public async store({ request }) {
+  public async store({ request }: HttpContextContract) {
     await request.validate(CreateUserValidator)
-    const data = request.only(['name', 'email', 'username', 'password', 'role'])
+    const data = request.only(['username', 'password', 'age', 'grade', 'role'])
 
-    const existingUser = await User.query()
-      .where('email', data.email)
-      .orWhere('username', data.username)
-      .first()
+    const existingUser = await User.query().where('username', data.username).first()
 
     if (existingUser) {
       throw new UnprocessableEntityException('User already exists')
     }
 
     const user = new User()
-    user.email = data.email
     user.username = data.username
-    user.role = data.role
     user.password = data.password
+    user.age = data.age
+    user.grade = data.grade
+    user.role = data.role
 
     await user.save()
 
-    const verificationUrl = this.generateVerificationUrl(user.email)
-    const resendVerificationUrl = this.generateResendVerificationUrl(user.email)
-
-    const verifyEmail = new VerifyEmail(
-      'Welcome to MedMap!',
-      user.email,
-      user.username,
-      verificationUrl,
-      resendVerificationUrl,
-      data.password
-    )
-
-    const isDevelopment = Env.get('NODE_ENV') === 'development'
-    const isStaging = Env.get('NODE_ENV') === 'staging'
-
-    let response
-
-    if (isDevelopment || isStaging) {
-      response = await verifyEmail.preview()
-    } else {
-      verifyEmail
-        .send()
-        .then(() => {
-          Logger.info(`Verification email sent to ${user.email}`)
-        })
-        .catch((error) => {
-          Logger.error(error)
-        })
-    }
-
     return {
-      ...user.toJSON(),
-      response,
+      message: 'User created successfully',
+      user,
     }
   }
 
-  public async update({ params, request }) {
+  public async update({ params, request }: HttpContextContract) {
     await request.validate(UpdateUserValidator)
 
-    const data = request.only(['name', 'email', 'username', 'password', 'role'])
+    const data = request.only(['username', 'password', 'age', 'grade', 'role'])
 
     const user = await User.find(params.id)
 
     if (!user) {
-      throw new NotFoundException('user is not found')
-    }
-
-    if (user.email !== data.email) {
-      const existingUser = await User.query().where('email', data.email).first()
-
-      if (existingUser) {
-        throw new UnprocessableEntityException('User already exists')
-      }
+      throw new NotFoundException('User is not found')
     }
 
     if (user.username !== data.username) {
       const existingUser = await User.query().where('username', data.username).first()
 
       if (existingUser) {
-        throw new UnprocessableEntityException('User already exists')
+        throw new UnprocessableEntityException('Username already exists')
       }
     }
 
-    user.email = data.email
     user.username = data.username
+    user.age = data.age
+    user.grade = data.grade
     user.role = data.role
 
     if (data.password) {
@@ -112,35 +69,23 @@ export default class UsersController {
 
     await user.save()
 
-    return user
+    return {
+      message: 'User updated successfully',
+      user,
+    }
   }
 
   public async destroy({ params }: HttpContextContract) {
     const user = await User.find(params.id)
 
     if (!user) {
-      throw new NotFoundException('user is not found')
+      throw new NotFoundException('User is not found')
     }
 
     await user.delete()
 
     return {
-      message: `SUCCESS: user deleted`,
-      code: 'SUCCESS',
+      message: 'User deleted successfully',
     }
-  }
-
-  private generateVerificationUrl(email: string): string {
-    const url = Route.makeSignedUrl('verifyEmail', { email }, { expiresIn: '24h' })
-
-    const clientWebBaseUrl = Env.get('CLIENT_WEB_BASEURL')
-
-    return `${clientWebBaseUrl}/verify-email?url=${url}`
-  }
-
-  private generateResendVerificationUrl(email: string): string {
-    const clientWebBaseUrl = Env.get('CLIENT_WEB_BASEURL')
-
-    return `${clientWebBaseUrl}/send-verification?email=${email}`
   }
 }

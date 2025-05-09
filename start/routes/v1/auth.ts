@@ -7,7 +7,7 @@ Route.group(() => {
     Route.post('/google/healthcare', 'AuthController.loginHealthcareWithGoogle')
 
     Route.post('/register/admin', 'AuthController.registerAdmin')
-    Route.post('/register/user', 'AuthController.registerUser')
+    Route.post('/register/', 'AuthController.registerUser')
     Route.post('/register/send-email-verification', 'AuthController.sendEmailVerification')
 
     Route.put('/update-verification-status', 'AuthController.updateVerificationStatus')

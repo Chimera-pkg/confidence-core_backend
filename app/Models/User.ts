@@ -12,9 +12,6 @@ export default class User extends BaseModel {
   public id: number
 
   @column()
-  public email: string
-
-  @column()
   public username: string
 
   @column({ serializeAs: null })
@@ -25,6 +22,12 @@ export default class User extends BaseModel {
 
   @column()
   public role: UserRole
+
+  @column()
+  public age: number
+
+  @column()
+  public grade: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

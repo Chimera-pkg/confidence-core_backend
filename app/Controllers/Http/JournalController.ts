@@ -1,5 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Journal from 'App/Models/Journal'
+import XpMeter from 'App/Models/XpMeter'
 
 export default class JournalController {
   public async index({ auth }: HttpContextContract) {
@@ -8,8 +9,38 @@ export default class JournalController {
 
   public async store({ auth, request, response }: HttpContextContract) {
     const data = request.only(['title', 'content', 'feeling', 'reasonFeeling'])
-    const journal = await Journal.create({ ...data, userId: auth.user!.id })
-    return response.created(journal)
+    const userId = auth.user!.id
+
+    // Buat journal baru
+    const journal = await Journal.create({ ...data, userId })
+
+    // Tambahkan XP ke XpMeter
+    let xpMeter = await XpMeter.findBy('user_id', userId)
+    if (!xpMeter) {
+      xpMeter = await XpMeter.create({ userId, xp: 0, level: 1 })
+    }
+
+    xpMeter.xp += 20
+    let isLevelUp = false
+
+    // Cek level-up
+    if (xpMeter.xp >= 100) {
+      xpMeter.level += 1
+      xpMeter.xp = 0 // Reset XP setelah level-up
+      isLevelUp = true
+    }
+
+    await xpMeter.save()
+
+    return response.created({
+      message: 'Journal created successfully',
+      journal,
+      gamification: {
+        xp: xpMeter.xp,
+        level: xpMeter.level,
+        isLevelUp,
+      },
+    })
   }
 
   public async show({ auth, params, response }: HttpContextContract) {

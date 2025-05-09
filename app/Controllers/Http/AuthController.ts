@@ -7,9 +7,9 @@ import EmailNotRegisteredException from 'App/Exceptions/EmailNotRegisteredExcept
 
 export default class AuthController {
   public async login({ request, auth }: HttpContextContract) {
-    const email = request.input('email')
+    const username = request.input('username')
     const password = request.input('password')
-    const user = await User.findBy('email', email)
+    const user = await User.findBy('username', username)
 
     if (!user) {
       throw new EmailNotRegisteredException()
@@ -19,7 +19,7 @@ export default class AuthController {
       throw new AuthenticationException('cannot login using password', 'E_UNAUTHORIZED_ACCESS')
     }
 
-    const token = await auth.use('api').attempt(email, password, {
+    const token = await auth.use('api').attempt(username, password, {
       expiresIn: '7 days',
     })
 
@@ -54,7 +54,6 @@ export default class AuthController {
     }
 
     const newUser = new User()
-    newUser.email = email
     newUser.username = username
     newUser.password = password
     newUser.role = UserRole.admin
@@ -67,23 +66,20 @@ export default class AuthController {
   }
 
   public async registerUser({ request }: HttpContextContract) {
-    const email = request.input('email')
-    const username = request.input('username')
-    const password = request.input('password')
+    const data = request.only(['username', 'password', 'age', 'grade'])
 
-    const existingUser = await User.query()
-      .where('email', email)
-      .orWhere('username', username)
-      .first()
+    const existingUser = await User.query().where('username', data.username).first()
 
     if (existingUser) {
-      throw new UnprocessableEntityException('User already exists')
+      throw new Error('Username already exists')
     }
 
     const newUser = new User()
-    newUser.email = email
-    newUser.username = username
-    newUser.password = password
+    newUser.username = data.username
+    newUser.password = data.password
+    newUser.age = data.age
+    newUser.grade = data.grade
+    newUser.role = UserRole.user
 
     await newUser.save()
 

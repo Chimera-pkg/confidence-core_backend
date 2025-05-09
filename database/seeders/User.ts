@@ -1,38 +1,29 @@
 import BaseSeeder from '@ioc:Adonis/Lucid/Seeder'
-import User from 'App/Models/User'
+import User, { UserRole } from 'App/Models/User'
 
 export default class UserSeeder extends BaseSeeder {
   public async run() {
     await User.createMany([
       {
-        email: 'hehe@mail.com',
-        username: 'hehe',
-        password: 'hehe',
+        username: 'admin2',
+        password: 'admin123',
+        age: 30,
+        grade: 'A',
+        role: UserRole.admin,
       },
       {
-        email: 'user1@mail.com',
-        username: 'user1',
-        password: 'password1',
+        username: 'student',
+        password: 'student',
+        age: 25,
+        grade: 'B',
+        role: UserRole.user,
       },
       {
-        email: 'user2@mail.com',
-        username: 'user2',
-        password: 'password2',
-      },
-      {
-        email: 'user3@mail.com',
-        username: 'user3',
-        password: 'password3',
-      },
-      {
-        email: 'user4@mail.com',
-        username: 'user4',
-        password: 'password4',
-      },
-      {
-        email: 'admin@mail.com',
-        username: 'admin',
-        password: 'admin',
+        username: 'teacher',
+        password: 'teacher',
+        age: 22,
+        grade: 'C',
+        role: UserRole.user,
       },
     ])
   }
