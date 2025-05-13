@@ -25,6 +25,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Profile_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Profile"));
 const Application_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Application"));
 const fs = __importStar(require("fs"));
+const Env_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Env"));
 class ProfilesController {
     async show({ auth }) {
         let profile = await Profile_1.default.query()
@@ -68,8 +69,9 @@ class ProfilesController {
         }
         const fileName = `${auth.user.id}_${new Date().getTime()}.${avatar.extname}`;
         await avatar.move(uploadPath, { name: fileName });
+        const baseUrl = Env_1.default.get('APP_BASE_URL');
         const profile = await Profile_1.default.findByOrFail('user_id', auth.user.id);
-        profile.avatarUrl = `http://localhost:3335/public/uploads/avatars/${fileName}`;
+        profile.avatarUrl = `${baseUrl}/uploads/avatars/${fileName}`;
         await profile.save();
         return { message: 'Avatar uploaded successfully', avatarUrl: profile.avatarUrl };
     }
@@ -87,8 +89,9 @@ class ProfilesController {
         }
         const fileName = `${auth.user.id}_${new Date().getTime()}.${avatar.extname}`;
         await avatar.move(uploadPath, { name: fileName });
+        const baseUrl = Env_1.default.get('APP_BASE_URL');
         const profile = await Profile_1.default.findByOrFail('user_id', auth.user.id);
-        profile.avatarUrl = `http://localhost:3335/public/uploads/avatars/${fileName}`;
+        profile.avatarUrl = `${baseUrl}/uploads/avatars/${fileName}`;
         await profile.save();
         return { message: 'Avatar updated successfully', avatarUrl: profile.avatarUrl };
     }
