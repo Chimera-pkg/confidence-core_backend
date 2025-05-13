@@ -34,37 +34,36 @@ class ScheduleController {
         await schedule.delete();
         return { message: 'Schedule deleted successfully' };
     }
-    async dailyLogin({ auth }) {
+    async updateStreakOnJournal({ auth }) {
         const userId = auth.user.id;
         let schedule = await Schedule_1.default.findBy('user_id', userId);
         if (!schedule) {
             schedule = await Schedule_1.default.create({
                 userId,
                 streakCount: 1,
-                lastLoginDate: luxon_1.DateTime.now(),
+                lastJournalDate: luxon_1.DateTime.now().toISODate(),
+                badges: JSON.stringify([]),
             });
-            return { message: 'First login recorded', streak: schedule.streakCount };
+            return { message: 'First journal recorded', streak: schedule.streakCount };
         }
         const now = luxon_1.DateTime.now();
-        const lastLogin = schedule.lastLoginDate;
-        if (lastLogin && now.diff(lastLogin, 'days').days < 1) {
-            return { message: 'Already logged in today', streak: schedule.streakCount };
-        }
-        if (lastLogin && now.diff(lastLogin, 'days').days === 1) {
+        const lastJournalDate = luxon_1.DateTime.fromISO(schedule.lastJournalDate || '');
+        if (lastJournalDate && now.diff(lastJournalDate, 'days').days === 1) {
             schedule.streakCount += 1;
         }
-        else {
-            schedule.streakCount = 1;
+        else if (lastJournalDate && now.diff(lastJournalDate, 'days').days > 1) {
+            schedule.resetStreak();
         }
-        schedule.lastLoginDate = now;
+        schedule.lastJournalDate = now.toISODate();
+        schedule.addBadge();
         await schedule.save();
-        if ([3, 7, 30].includes(schedule.streakCount)) {
-            return {
-                message: `Congratulations! You've reached a ${schedule.streakCount}-day streak!`,
-                streak: schedule.streakCount,
-            };
-        }
-        return { message: 'Login recorded', streak: schedule.streakCount };
+        return {
+            message: schedule.isMilestone()
+                ? `Congratulations! You've reached a ${schedule.streakCount}-day streak!`
+                : 'Journal recorded successfully',
+            streak: schedule.streakCount,
+            badges: schedule.badges,
+        };
     }
 }
 exports.default = ScheduleController;

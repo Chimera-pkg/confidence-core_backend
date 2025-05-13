@@ -37,6 +37,10 @@ __decorate([
     __metadata("design:type", Number)
 ], Leaderboard.prototype, "streakCount", void 0);
 __decorate([
+    Orm_1.column(),
+    __metadata("design:type", Number)
+], Leaderboard.prototype, "xp", void 0);
+__decorate([
     Orm_1.belongsTo(() => User_1.default),
     __metadata("design:type", Object)
 ], Leaderboard.prototype, "user", void 0);

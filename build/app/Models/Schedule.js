@@ -16,7 +16,27 @@ const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
 const luxon_1 = require("luxon");
 const User_1 = __importDefault(require("./User"));
 class Schedule extends Orm_1.BaseModel {
+    static initializeBadges(schedule) {
+        if (!schedule.badges) {
+            schedule.badges = [];
+        }
+    }
+    isMilestone() {
+        return Schedule.streakMilestones.includes(this.streakCount);
+    }
+    resetStreak() {
+        this.streakCount = 0;
+    }
+    addBadge() {
+        if (this.isMilestone()) {
+            const badge = `${this.streakCount}-day streak`;
+            if (!this.badges.includes(badge)) {
+                this.badges.push(badge);
+            }
+        }
+    }
 }
+Schedule.streakMilestones = [3, 7, 14, 21, 30];
 __decorate([
     Orm_1.column({ isPrimary: true }),
     __metadata("design:type", Number)
@@ -42,8 +62,18 @@ __decorate([
     __metadata("design:type", Object)
 ], Schedule.prototype, "lastJournalDate", void 0);
 __decorate([
+    Orm_1.column(),
+    __metadata("design:type", Array)
+], Schedule.prototype, "badges", void 0);
+__decorate([
     Orm_1.belongsTo(() => User_1.default),
     __metadata("design:type", Object)
 ], Schedule.prototype, "user", void 0);
+__decorate([
+    Orm_1.beforeSave(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Schedule]),
+    __metadata("design:returntype", void 0)
+], Schedule, "initializeBadges", null);
 exports.default = Schedule;
 //# sourceMappingURL=Schedule.js.map

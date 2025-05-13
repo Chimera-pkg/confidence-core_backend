@@ -11,24 +11,19 @@ class ScheduleSeeder extends Seeder_1.default {
         await Schedule_1.default.createMany([
             {
                 userId: 1,
-                days: JSON.stringify({ mon: true, tue: false, wed: true, thu: false, fri: true }),
+                days: JSON.stringify({ mon: true, tue: true, wed: true }),
                 streakCount: 3,
                 lastLoginDate: luxon_1.DateTime.now().minus({ days: 1 }),
-                lastJournalDate: luxon_1.DateTime.now().minus({ days: 1 }).toISODate(),
+                lastJournalDate: luxon_1.DateTime.now().minus({ days: 1 }),
+                badges: [],
             },
             {
                 userId: 2,
-                days: JSON.stringify({ mon: false, tue: true, wed: false, thu: true, fri: false }),
+                days: JSON.stringify({ mon: true, tue: true, wed: true, thu: true }),
                 streakCount: 7,
                 lastLoginDate: luxon_1.DateTime.now().minus({ days: 1 }),
-                lastJournalDate: luxon_1.DateTime.now().minus({ days: 1 }).toISODate(),
-            },
-            {
-                userId: 3,
-                days: JSON.stringify({ mon: true, tue: true, wed: true, thu: true, fri: true }),
-                streakCount: 30,
-                lastLoginDate: luxon_1.DateTime.now().minus({ days: 1 }),
-                lastJournalDate: luxon_1.DateTime.now().minus({ days: 1 }).toISODate(),
+                lastJournalDate: luxon_1.DateTime.now().minus({ days: 1 }),
+                badges: [],
             },
         ]);
     }

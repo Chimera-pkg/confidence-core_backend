@@ -9,5 +9,7 @@ Route_1.default.group(() => {
     Route_1.default.put('profile', 'ProfilesController.update').middleware('auth:api');
     Route_1.default.post('profile', 'ProfilesController.store').middleware('auth:api');
     Route_1.default.delete('profile/:id', 'ProfilesController.destroy').middleware('auth:api');
+    Route_1.default.post('profile/avatar', 'ProfilesController.uploadAvatar').middleware('auth:api');
+    Route_1.default.put('profile/avatar', 'ProfilesController.updateAvatar').middleware('auth:api');
 }).prefix('v1');
 //# sourceMappingURL=profile.js.map

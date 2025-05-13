@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Journal_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Journal"));
 const XpMeter_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/XpMeter"));
+const SchedulesController_1 = __importDefault(require("./SchedulesController"));
 class JournalController {
     async index({ auth }) {
         return await Journal_1.default.query().where('user_id', auth.user.id);
@@ -13,6 +14,12 @@ class JournalController {
         const data = request.only(['title', 'content', 'feeling', 'reasonFeeling']);
         const userId = auth.user.id;
         const journal = await Journal_1.default.create({ ...data, userId });
+        const scheduleController = new SchedulesController_1.default();
+        const streakResponse = await scheduleController.updateStreakOnJournal({
+            auth,
+            request,
+            response,
+        });
         let xpMeter = await XpMeter_1.default.findBy('user_id', userId);
         if (!xpMeter) {
             xpMeter = await XpMeter_1.default.create({ userId, xp: 0, level: 1 });
@@ -28,6 +35,8 @@ class JournalController {
         return response.created({
             message: 'Journal created successfully',
             journal,
+            streak: streakResponse.streak,
+            badges: streakResponse.badges,
             gamification: {
                 xp: xpMeter.xp,
                 level: xpMeter.level,

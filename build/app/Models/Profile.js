@@ -16,6 +16,7 @@ const Orm_1 = global[Symbol.for('ioc.use')]("Adonis/Lucid/Orm");
 const User_1 = __importDefault(require("./User"));
 const XpMeter_1 = __importDefault(require("./XpMeter"));
 const Schedule_1 = __importDefault(require("./Schedule"));
+const Journal_1 = __importDefault(require("./Journal"));
 class Profile extends Orm_1.BaseModel {
 }
 __decorate([
@@ -42,5 +43,9 @@ __decorate([
     Orm_1.hasOne(() => Schedule_1.default, { foreignKey: 'userId' }),
     __metadata("design:type", Object)
 ], Profile.prototype, "schedule", void 0);
+__decorate([
+    Orm_1.hasMany(() => Journal_1.default, { foreignKey: 'userId' }),
+    __metadata("design:type", Object)
+], Profile.prototype, "journals", void 0);
 exports.default = Profile;
 //# sourceMappingURL=Profile.js.map
