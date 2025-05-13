@@ -17,6 +17,9 @@ export default class Leaderboard extends BaseModel {
   @column()
   public streakCount: number
 
+  @column()
+  public xp: number
+
   @belongsTo(() => User)
   public user: BelongsTo<typeof User>
 }

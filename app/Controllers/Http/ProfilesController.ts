@@ -1,5 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Profile from 'App/Models/Profile'
+import Application from '@ioc:Adonis/Core/Application'
+import * as fs from 'fs'
+import * as path from 'path'
 
 export default class ProfilesController {
   // Menampilkan profil pengguna yang sedang login berdasarkan username
@@ -33,6 +36,71 @@ export default class ProfilesController {
       age: profile.user?.age || 'N/A',
       username: profile.user?.username || 'N/A',
     }
+  }
+
+  public async uploadAvatar({ auth, request }: HttpContextContract) {
+    const avatar = request.file('avatar_url', {
+      extnames: ['jpg', 'png', 'jpeg', 'PNG'], // Ekstensi yang diperbolehkan
+      size: '5mb', // Ukuran maksimum file
+    })
+
+    if (!avatar) {
+      return { message: 'Please upload a valid avatar file' }
+    }
+
+    // Path folder tujuan
+    const uploadPath = Application.publicPath('uploads/avatars')
+
+    // Periksa apakah folder ada, jika tidak buat folder
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true }) // Buat folder secara rekursif
+    }
+
+    // Generate nama file unik
+    const fileName = `${auth.user!.id}_${new Date().getTime()}.${avatar.extname}`
+
+    // Pindahkan file ke folder public/uploads/avatars
+    await avatar.move(uploadPath, { name: fileName })
+
+    // Update URL avatar di profil pengguna
+    const profile = await Profile.findByOrFail('user_id', auth.user!.id)
+    profile.avatarUrl = `http://localhost:3335/public/uploads/avatars/${fileName}` // URL localhost
+    await profile.save()
+
+    return { message: 'Avatar uploaded successfully', avatarUrl: profile.avatarUrl }
+  }
+
+  // Update avatar URL
+  public async updateAvatar({ auth, request }: HttpContextContract) {
+    const avatar = request.file('avatar_url', {
+      extnames: ['jpg', 'png', 'jpeg', 'PNG'], // Ekstensi yang diperbolehkan
+      size: '2mb', // Ukuran maksimum file
+    })
+
+    if (!avatar) {
+      return { message: 'Please upload a valid avatar file' }
+    }
+
+    // Path folder tujuan
+    const uploadPath = Application.publicPath('uploads/avatars')
+
+    // Periksa apakah folder ada, jika tidak buat folder
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true }) // Buat folder secara rekursif
+    }
+
+    // Generate nama file unik
+    const fileName = `${auth.user!.id}_${new Date().getTime()}.${avatar.extname}`
+
+    // Pindahkan file ke folder public/uploads/avatars
+    await avatar.move(uploadPath, { name: fileName })
+
+    // Update URL avatar di profil pengguna
+    const profile = await Profile.findByOrFail('user_id', auth.user!.id)
+    profile.avatarUrl = `http://localhost:3335/public/uploads/avatars/${fileName}` // URL localhost
+    await profile.save()
+
+    return { message: 'Avatar updated successfully', avatarUrl: profile.avatarUrl }
   }
 
   // Membuat profil baru (untuk admin atau testing)
