@@ -44,47 +44,40 @@ export default class ScheduleController {
   }
 
   // Login harian dengan menghitung streak
-  public async dailyLogin({ auth }: HttpContextContract) {
+  public async updateStreakOnJournal({ auth }: HttpContextContract) {
     const userId = auth.user!.id
     let schedule = await Schedule.findBy('user_id', userId)
 
     if (!schedule) {
-      // Jika schedule belum ada, buat baru
+      // Jika schedule belum ada, buat entri baru
       schedule = await Schedule.create({
         userId,
         streakCount: 1,
-        lastLoginDate: DateTime.now(),
+        lastJournalDate: DateTime.now().toISODate(),
+        badges: JSON.stringify([]), // Pastikan badges diinisialisasi sebagai array kosong
       })
-      return { message: 'First login recorded', streak: schedule.streakCount }
+      return { message: 'First journal recorded', streak: schedule.streakCount }
     }
 
     const now = DateTime.now()
-    const lastLogin = schedule.lastLoginDate
+    const lastJournalDate = DateTime.fromISO(schedule.lastJournalDate || '')
 
-    if (lastLogin && now.diff(lastLogin, 'days').days < 1) {
-      // Jika sudah login hari ini
-      return { message: 'Already logged in today', streak: schedule.streakCount }
-    }
-
-    if (lastLogin && now.diff(lastLogin, 'days').days === 1) {
-      // Jika login berturut-turut
+    if (lastJournalDate && now.diff(lastJournalDate, 'days').days === 1) {
       schedule.streakCount += 1
-    } else {
-      // Jika login tidak berturut-turut, reset streak
-      schedule.streakCount = 1
+    } else if (lastJournalDate && now.diff(lastJournalDate, 'days').days > 1) {
+      schedule.resetStreak()
     }
 
-    schedule.lastLoginDate = now
+    schedule.lastJournalDate = now.toISODate()
+    schedule.addBadge()
     await schedule.save()
 
-    // Berikan notifikasi jika mencapai milestone
-    if ([3, 7, 30].includes(schedule.streakCount)) {
-      return {
-        message: `Congratulations! You've reached a ${schedule.streakCount}-day streak!`,
-        streak: schedule.streakCount,
-      }
+    return {
+      message: schedule.isMilestone()
+        ? `Congratulations! You've reached a ${schedule.streakCount}-day streak!`
+        : 'Journal recorded successfully',
+      streak: schedule.streakCount,
+      badges: schedule.badges,
     }
-
-    return { message: 'Login recorded', streak: schedule.streakCount }
   }
 }
