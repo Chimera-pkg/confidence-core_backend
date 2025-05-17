@@ -69,7 +69,7 @@ export default class ProfilesController {
   public async changePassword({ auth, request }: HttpContextContract) {
     const password = request.input('password')
     const user = await User.findOrFail(auth.user!.id)
-    user.password = await Hash.make(password)
+    user.password = password // Jangan hash manual di sini!
     await user.save()
     return { message: 'Password updated' }
   }
