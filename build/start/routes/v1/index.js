@@ -18,4 +18,5 @@ __exportStar(require("./schedule"), exports);
 __exportStar(require("./nav-logs"), exports);
 __exportStar(require("./profile"), exports);
 __exportStar(require("./users"), exports);
+__exportStar(require("./leaderboard"), exports);
 //# sourceMappingURL=index.js.map

@@ -26,6 +26,7 @@ const Profile_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Prof
 const Application_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Application"));
 const fs = __importStar(require("fs"));
 const Env_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Env"));
+const User_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/User"));
 class ProfilesController {
     async show({ auth }) {
         let profile = await Profile_1.default.query()
@@ -55,25 +56,19 @@ class ProfilesController {
             username: profile.user?.username || 'N/A',
         };
     }
-    async uploadAvatar({ auth, request }) {
-        const avatar = request.file('avatar_url', {
-            extnames: ['jpg', 'png', 'jpeg', 'PNG'],
-            size: '5mb',
-        });
-        if (!avatar) {
-            return { message: 'Please upload a valid avatar file' };
-        }
-        const uploadPath = Application_1.default.publicPath('uploads/avatars');
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        const fileName = `${auth.user.id}_${new Date().getTime()}.${avatar.extname}`;
-        await avatar.move(uploadPath, { name: fileName });
-        const baseUrl = Env_1.default.get('APP_BASE_URL');
-        const profile = await Profile_1.default.findByOrFail('user_id', auth.user.id);
-        profile.avatarUrl = `${baseUrl}/uploads/avatars/${fileName}`;
-        await profile.save();
-        return { message: 'Avatar uploaded successfully', avatarUrl: profile.avatarUrl };
+    async changeUsername({ auth, request }) {
+        const username = request.input('username');
+        const user = await User_1.default.findOrFail(auth.user.id);
+        user.username = username;
+        await user.save();
+        return { message: 'Username updated', username };
+    }
+    async changePassword({ auth, request }) {
+        const password = request.input('password');
+        const user = await User_1.default.findOrFail(auth.user.id);
+        user.password = password;
+        await user.save();
+        return { message: 'Password updated' };
     }
     async updateAvatar({ auth, request }) {
         const avatar = request.file('avatar_url', {
