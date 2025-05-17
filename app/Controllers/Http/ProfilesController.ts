@@ -4,7 +4,6 @@ import Application from '@ioc:Adonis/Core/Application'
 import * as fs from 'fs'
 import Env from '@ioc:Adonis/Core/Env'
 import User from 'App/Models/User'
-import Hash from '@ioc:Adonis/Core/Hash'
 
 export default class ProfilesController {
   // Menampilkan profil pengguna yang sedang login berdasarkan username
@@ -38,22 +37,6 @@ export default class ProfilesController {
       age: profile.user?.age || 'N/A',
       username: profile.user?.username || 'N/A',
     }
-  }
-
-  public async uploadAvatar({ auth, request }: HttpContextContract) {
-    const avatar = request.file('avatar', {
-      extnames: ['jpg', 'png', 'jpeg'],
-      size: '5mb',
-    })
-    if (!avatar) return { message: 'Please upload a valid avatar file' }
-    const uploadPath = Application.publicPath('uploads/avatars')
-    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true })
-    const fileName = `${auth.user!.id}_${Date.now()}.${avatar.extname}`
-    await avatar.move(uploadPath, { name: fileName })
-    const profile = await Profile.findByOrFail('user_id', auth.user!.id)
-    profile.avatarUrl = `/uploads/avatars/${fileName}`
-    await profile.save()
-    return { message: 'Avatar uploaded', avatarUrl: profile.avatarUrl }
   }
 
   // Change username
@@ -101,7 +84,8 @@ export default class ProfilesController {
     // Update URL avatar di profil pengguna
     const baseUrl = Env.get('APP_BASE_URL') // Ambil URL dasar dari .env
     const profile = await Profile.findByOrFail('user_id', auth.user!.id)
-    profile.avatarUrl = `${baseUrl}/public/uploads/avatars/${fileName}` // Gunakan URL dasar
+    profile.avatarUrl = `${baseUrl}/uploads/avatars/${fileName}`
+
     await profile.save()
 
     return { message: 'Avatar updated successfully', avatarUrl: profile.avatarUrl }
