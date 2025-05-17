@@ -1,83 +1,54 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Schedule from 'App/Models/Schedule'
-import { DateTime } from 'luxon'
 
-export default class ScheduleController {
-  // Menampilkan schedule pengguna yang sedang login
-  public async show({ auth }: HttpContextContract) {
-    const userId = auth.user!.id
-    const schedule = await Schedule.findBy('user_id', userId)
-
-    if (!schedule) {
-      return { message: 'No schedule found for this user' }
-    }
-
-    return schedule
+export default class SchedulesController {
+  updateStreakOnJournal(arg0: HttpContextContract) {
+    throw new Error('Method not implemented.')
   }
-
-  // Membuat schedule baru
-  public async store({ auth, request }: HttpContextContract) {
-    const userId = auth.user!.id
-    const data = request.only(['days', 'streakCount', 'lastLoginDate'])
-
-    const schedule = await Schedule.create({
-      userId,
-      days: data.days,
-      streakCount: data.streakCount || 0,
-      lastLoginDate: data.lastLoginDate || DateTime.now(),
-    })
-
-    return { message: 'Schedule created successfully', schedule }
-  }
-
-  // Menghapus schedule pengguna
-  public async delete({ auth, response }: HttpContextContract) {
-    const userId = auth.user!.id
-    const schedule = await Schedule.findBy('user_id', userId)
-
+  // POST: Set hari
+  public async setDays({ auth, request }: HttpContextContract) {
+    const days = request.input('days') // array of hari
+    let schedule = await Schedule.findBy('user_id', auth.user!.id)
     if (!schedule) {
-      return response.notFound({ message: 'No schedule found for this user' })
-    }
-
-    await schedule.delete()
-    return { message: 'Schedule deleted successfully' }
-  }
-
-  // Login harian dengan menghitung streak
-  public async updateStreakOnJournal({ auth }: HttpContextContract) {
-    const userId = auth.user!.id
-    let schedule = await Schedule.findBy('user_id', userId)
-
-    if (!schedule) {
-      // Jika schedule belum ada, buat entri baru
       schedule = await Schedule.create({
-        userId,
-        streakCount: 1,
-        lastJournalDate: DateTime.now().toISODate(),
-        badges: JSON.stringify([]), // Pastikan badges diinisialisasi sebagai array kosong
+        userId: auth.user!.id,
+        days: JSON.stringify(days),
+        streakCount: 0,
+        journalCount: 0,
       })
-      return { message: 'First journal recorded', streak: schedule.streakCount }
+    } else {
+      schedule.days = JSON.stringify(days)
+      await schedule.save()
     }
+    return { days }
+  }
 
-    const now = DateTime.now()
-    const lastJournalDate = DateTime.fromISO(schedule.lastJournalDate || '')
+  // GET: Streak
+  public async streak({ auth }: HttpContextContract) {
+    const schedule = await Schedule.findBy('user_id', auth.user!.id)
+    return { streak: schedule?.streakCount || 0 }
+  }
 
-    if (lastJournalDate && now.diff(lastJournalDate, 'days').days === 1) {
-      schedule.streakCount += 1
-    } else if (lastJournalDate && now.diff(lastJournalDate, 'days').days > 1) {
-      schedule.resetStreak()
+  // GET: Total Journal
+  public async totalJournal({ auth }: HttpContextContract) {
+    const schedule = await Schedule.findBy('user_id', auth.user!.id)
+    return { journalCount: schedule?.journalCount || 0 }
+  }
+
+  // GET: Show schedule (for JournalController)
+  public async show({ auth }: HttpContextContract) {
+    const schedule = await Schedule.findBy('user_id', auth.user!.id)
+    if (!schedule) return null
+    // Parse days ke array of object
+    let days = []
+    try {
+      days = JSON.parse(schedule.days)
+    } catch {
+      days = []
     }
-
-    schedule.lastJournalDate = now.toISODate()
-    schedule.addBadge()
-    await schedule.save()
-
     return {
-      message: schedule.isMilestone()
-        ? `Congratulations! You've reached a ${schedule.streakCount}-day streak!`
-        : 'Journal recorded successfully',
-      streak: schedule.streakCount,
-      badges: schedule.badges,
+      ...schedule.toJSON(),
+      days,
     }
   }
 }
