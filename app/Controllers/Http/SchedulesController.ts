@@ -1,10 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Schedule from 'App/Models/Schedule'
+import { DateTime } from 'luxon'
 
 export default class SchedulesController {
-  updateStreakOnJournal(arg0: HttpContextContract) {
-    throw new Error('Method not implemented.')
-  }
   // POST: Set hari
   public async setDays({ auth, request }: HttpContextContract) {
     const days = request.input('days') // array of hari
@@ -38,17 +36,30 @@ export default class SchedulesController {
   // GET: Show schedule (for JournalController)
   public async show({ auth }: HttpContextContract) {
     const schedule = await Schedule.findBy('user_id', auth.user!.id)
-    if (!schedule) return null
-    // Parse days ke array of object
-    let days = []
-    try {
-      days = JSON.parse(schedule.days)
-    } catch {
-      days = []
+    return schedule
+  }
+
+  public async updateStreakOnJournal({ auth }: HttpContextContract) {
+    const userId = auth.user!.id
+    let schedule = await Schedule.findBy('user_id', userId)
+    if (!schedule) {
+      schedule = await Schedule.create({
+        userId,
+        days: JSON.stringify([]),
+        streakCount: 1,
+        journalCount: 1,
+        lastJournalDate: DateTime.local(),
+      })
+    } else {
+      schedule.journalCount = (schedule.journalCount || 0) + 1
+      schedule.streakCount = (schedule.streakCount || 0) + 1
+      schedule.lastJournalDate = DateTime.local()
+      await schedule.save()
     }
     return {
-      ...schedule.toJSON(),
-      days,
+      streak: schedule.streakCount,
+      journalCount: schedule.journalCount,
+      lastJournalDate: schedule.lastJournalDate,
     }
   }
 }

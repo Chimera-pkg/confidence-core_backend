@@ -44,7 +44,7 @@ export default class JournalController {
     return response.created({
       message: 'Journal created successfully',
       journal,
-      // streak: streakResponse.streak,
+      streak: streakResponse.streak,
       // badges: streakResponse.badges,
       gamification: {
         xp: xpMeter.xp,
