@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Profile_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Profile"));
-const Env_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Env"));
 const User_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/User"));
 const Drive_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Drive"));
 class ProfilesController {
@@ -60,7 +59,7 @@ class ProfilesController {
         }
         const subfolder = 'avatars';
         await avatar.moveToDisk(subfolder);
-        const serverBaseUrl = Env_1.default.get('SERVER_BASEURL');
+        const serverBaseUrl = 'http://103.196.155.157:3335';
         const path = await Drive_1.default.getUrl(`${subfolder}/${avatar.fileName}`);
         const url = serverBaseUrl + path;
         const profile = await Profile_1.default.findByOrFail('user_id', auth.user.id);

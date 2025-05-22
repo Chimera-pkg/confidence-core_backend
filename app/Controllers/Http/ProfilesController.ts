@@ -75,7 +75,7 @@ export default class ProfilesController {
     await avatar.moveToDisk(subfolder)
 
     // Generate file URL
-    const serverBaseUrl = Env.get('SERVER_BASEURL')
+    const serverBaseUrl = 'http://103.196.155.157:3335' // Replace with your server URL
     const path = await Drive.getUrl(`${subfolder}/${avatar.fileName}`)
     const url = serverBaseUrl + path
 
