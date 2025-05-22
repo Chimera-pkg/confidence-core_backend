@@ -4,6 +4,7 @@ import Application from '@ioc:Adonis/Core/Application'
 import * as fs from 'fs'
 import Env from '@ioc:Adonis/Core/Env'
 import User from 'App/Models/User'
+import Drive from '@ioc:Adonis/Core/Drive'
 
 export default class ProfilesController {
   // Menampilkan profil pengguna yang sedang login berdasarkan username
@@ -59,33 +60,28 @@ export default class ProfilesController {
 
   public async updateAvatar({ auth, request }: HttpContextContract) {
     const avatar = request.file('avatar_url', {
-      extnames: ['jpg', 'png', 'jpeg', 'PNG'], // Ekstensi yang diperbolehkan
-      size: '2mb', // Ukuran maksimum file
+      extnames: ['jpg', 'png', 'jpeg', 'PNG'], // Allowed extensions
+      size: '2mb', // Max file size
     })
 
     if (!avatar) {
       return { message: 'Please upload a valid avatar file' }
     }
 
-    // Path folder tujuan
-    const uploadPath = Application.publicPath('uploads/avatars')
+    // Define subfolder for avatar uploads
+    const subfolder = 'avatars'
 
-    // Periksa apakah folder ada, jika tidak buat folder
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true }) // Buat folder secara rekursif
-    }
+    // Move file to disk
+    await avatar.moveToDisk(subfolder)
 
-    // Generate nama file unik
-    const fileName = `${auth.user!.id}_${new Date().getTime()}.${avatar.extname}`
+    // Generate file URL
+    const serverBaseUrl = Env.get('SERVER_BASEURL')
+    const path = await Drive.getUrl(`${subfolder}/${avatar.fileName}`)
+    const url = serverBaseUrl + path
 
-    // Pindahkan file ke folder public/uploads/avatars
-    await avatar.move(uploadPath, { name: fileName })
-
-    // Update URL avatar di profil pengguna
-    const baseUrl = Env.get('APP_BASE_URL') // Ambil URL dasar dari .env
+    // Update profile with new avatar URL
     const profile = await Profile.findByOrFail('user_id', auth.user!.id)
-    profile.avatarUrl = `${baseUrl}/uploads/avatars/${fileName}`
-
+    profile.avatarUrl = url
     await profile.save()
 
     return { message: 'Avatar updated successfully', avatarUrl: profile.avatarUrl }

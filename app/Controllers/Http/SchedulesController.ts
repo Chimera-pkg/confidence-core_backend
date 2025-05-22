@@ -35,8 +35,36 @@ export default class SchedulesController {
 
   // GET: Show schedule (for JournalController)
   public async show({ auth }: HttpContextContract) {
+    const defaultDays = [
+      { day: 'Mon', active: false },
+      { day: 'Tue', active: false },
+      { day: 'Wed', active: false },
+      { day: 'Thu', active: false },
+      { day: 'Fri', active: false },
+      { day: 'Sat', active: false },
+      { day: 'Sun', active: false },
+    ]
     const schedule = await Schedule.findBy('user_id', auth.user!.id)
-    return schedule
+    if (!schedule) {
+      // Jika belum ada, return semua hari dengan active: false
+      return {
+        days: defaultDays,
+        streakCount: 0,
+        journalCount: 0,
+        lastJournalDate: null,
+      }
+    }
+    // Parse days dari string ke array
+    let daysArr: any[] = []
+    try {
+      daysArr = schedule.days ? JSON.parse(schedule.days) : defaultDays
+    } catch {
+      daysArr = defaultDays
+    }
+    return {
+      ...schedule.toJSON(),
+      days: daysArr,
+    }
   }
 
   public async updateStreakOnJournal({ auth }: HttpContextContract) {
