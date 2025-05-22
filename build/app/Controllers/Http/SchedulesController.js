@@ -32,8 +32,35 @@ class SchedulesController {
         return { journalCount: schedule?.journalCount || 0 };
     }
     async show({ auth }) {
-        const schedule = await Schedule_1.default.findBy('user_id', auth.user.id);
-        return schedule;
+        const defaultDays = [
+            { day: 'Mon', active: false },
+            { day: 'Tue', active: false },
+            { day: 'Wed', active: false },
+            { day: 'Thurs', active: false },
+            { day: 'Friday', active: false },
+            { day: 'Saturday', active: false },
+            { day: 'Sunday', active: false },
+        ];
+        let schedule = await Schedule_1.default.findBy('user_id', auth.user.id);
+        if (!schedule) {
+            schedule = await Schedule_1.default.create({
+                userId: auth.user.id,
+                days: JSON.stringify(defaultDays),
+                streakCount: 0,
+                journalCount: 0,
+            });
+        }
+        let daysArr = [];
+        try {
+            daysArr = schedule.days ? JSON.parse(schedule.days) : defaultDays;
+        }
+        catch {
+            daysArr = defaultDays;
+        }
+        return {
+            ...schedule.toJSON(),
+            days: daysArr,
+        };
     }
     async updateStreakOnJournal({ auth }) {
         const userId = auth.user.id;

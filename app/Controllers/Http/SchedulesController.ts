@@ -39,21 +39,23 @@ export default class SchedulesController {
       { day: 'Mon', active: false },
       { day: 'Tue', active: false },
       { day: 'Wed', active: false },
-      { day: 'Thu', active: false },
-      { day: 'Fri', active: false },
-      { day: 'Sat', active: false },
-      { day: 'Sun', active: false },
+      { day: 'Thurs', active: false },
+      { day: 'Friday', active: false },
+      { day: 'Saturday', active: false },
+      { day: 'Sunday', active: false },
     ]
-    const schedule = await Schedule.findBy('user_id', auth.user!.id)
+
+    let schedule = await Schedule.findBy('user_id', auth.user!.id)
     if (!schedule) {
-      // Jika belum ada, return semua hari dengan active: false
-      return {
-        days: defaultDays,
+      // Jika belum ada schedule, buat dengan default days
+      schedule = await Schedule.create({
+        userId: auth.user!.id,
+        days: JSON.stringify(defaultDays),
         streakCount: 0,
         journalCount: 0,
-        lastJournalDate: null,
-      }
+      })
     }
+
     // Parse days dari string ke array
     let daysArr: any[] = []
     try {
@@ -61,12 +63,12 @@ export default class SchedulesController {
     } catch {
       daysArr = defaultDays
     }
+
     return {
       ...schedule.toJSON(),
       days: daysArr,
     }
   }
-
   public async updateStreakOnJournal({ auth }: HttpContextContract) {
     const userId = auth.user!.id
     let schedule = await Schedule.findBy('user_id', userId)
