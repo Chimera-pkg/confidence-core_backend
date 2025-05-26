@@ -13,6 +13,7 @@ class LeaderboardsController {
             .count('* as journalCount')
             .select('user_id')
             .groupBy('user_id');
+        const profiles = await Database_1.default.from('profiles').select('user_id', 'avatar_url');
         const leaderboard = users.map((user) => {
             const schedule = schedules.find((s) => s.user_id === user.id) || {
                 streak_count: 0,
@@ -20,6 +21,7 @@ class LeaderboardsController {
             };
             const xpMeter = xpMeters.find((x) => x.user_id === user.id) || { xp: 0 };
             const journal = journals.find((j) => j.user_id === user.id) || { journalCount: 0 };
+            const profile = profiles.find((p) => p.user_id === user.id) || { avatar_url: null };
             const streakCount = schedule.streak_count;
             const journalCount = schedule.journal_count + journal.journalCount;
             const xp = xpMeter.xp;
@@ -33,6 +35,7 @@ class LeaderboardsController {
                 journalCount,
                 xp,
                 totalScore,
+                avatarUrl: profile.avatar_url,
             };
         });
         const sortedLeaderboard = leaderboard

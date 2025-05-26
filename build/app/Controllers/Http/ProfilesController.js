@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Profile_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Profile"));
 const User_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/User"));
 const Drive_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Drive"));
+const LeaderboardsController_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Controllers/Http/LeaderboardsController"));
 class ProfilesController {
     async show({ auth }) {
         let profile = await Profile_1.default.query()
@@ -22,6 +23,9 @@ class ProfilesController {
                 avatarUrl: null,
             });
         }
+        const leaderboardController = new LeaderboardsController_1.default();
+        const leaderboard = await leaderboardController.index({});
+        const userRank = leaderboard.find((entry) => entry.id === auth.user.id)?.rank || null;
         return {
             avatarUrl: profile.avatarUrl,
             level: profile.xpMeter?.level || 1,
@@ -33,6 +37,7 @@ class ProfilesController {
             grade: profile.user?.grade || 'N/A',
             age: profile.user?.age || 'N/A',
             username: profile.user?.username || 'N/A',
+            rank: userRank,
         };
     }
     async changeUsername({ auth, request }) {
