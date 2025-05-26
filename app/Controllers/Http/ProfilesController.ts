@@ -5,6 +5,7 @@ import * as fs from 'fs'
 import Env from '@ioc:Adonis/Core/Env'
 import User from 'App/Models/User'
 import Drive from '@ioc:Adonis/Core/Drive'
+import LeaderboardsController from 'App/Controllers/Http/LeaderboardsController'
 
 export default class ProfilesController {
   // Menampilkan profil pengguna yang sedang login berdasarkan username
@@ -26,6 +27,11 @@ export default class ProfilesController {
       })
     }
 
+    // Ambil leaderboard dan cari rank user ini
+    const leaderboardController = new LeaderboardsController()
+    const leaderboard = await leaderboardController.index({} as HttpContextContract)
+    const userRank = leaderboard.find((entry: any) => entry.id === auth.user!.id)?.rank || null
+
     return {
       avatarUrl: profile.avatarUrl,
       level: profile.xpMeter?.level || 1,
@@ -37,6 +43,7 @@ export default class ProfilesController {
       grade: profile.user?.grade || 'N/A',
       age: profile.user?.age || 'N/A',
       username: profile.user?.username || 'N/A',
+      rank: userRank,
     }
   }
 

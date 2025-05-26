@@ -6,7 +6,7 @@ export default class LeaderboardsController {
     // Ambil semua user dari tabel users
     const users = await Database.from('users').select('id', 'username', 'grade', 'age')
 
-    // Ambil data schedule, xp_meter, dan journal berdasarkan user_id
+    // Ambil data schedule, xp_meter, journal, dan profile (avatar)
     const schedules = await Database.from('schedules').select(
       'user_id',
       'streak_count',
@@ -17,6 +17,7 @@ export default class LeaderboardsController {
       .count('* as journalCount')
       .select('user_id')
       .groupBy('user_id')
+    const profiles = await Database.from('profiles').select('user_id', 'avatar_url')
 
     // Gabungkan data berdasarkan user_id
     const leaderboard = users.map((user) => {
@@ -26,6 +27,7 @@ export default class LeaderboardsController {
       }
       const xpMeter = xpMeters.find((x) => x.user_id === user.id) || { xp: 0 }
       const journal = journals.find((j) => j.user_id === user.id) || { journalCount: 0 }
+      const profile = profiles.find((p) => p.user_id === user.id) || { avatar_url: null }
 
       const streakCount = schedule.streak_count
       const journalCount = schedule.journal_count + journal.journalCount
@@ -42,6 +44,7 @@ export default class LeaderboardsController {
         journalCount,
         xp,
         totalScore,
+        avatarUrl: profile.avatar_url,
       }
     })
 
